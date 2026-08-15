@@ -187,6 +187,7 @@ form.addEventListener('submit', (e) => {
       const filename = generatePDF(data);
       window._lastData = data;
       document.getElementById('excelPanel').classList.add('show');
+      document.getElementById('excelBtn').hidden = false;
       document.getElementById('excelHint').textContent = 'Downloaded ' + filename + '. Convert the same intake into an Excel spreadsheet for the team file.';
       showToast('PDF saved: ' + filename);
     } catch (err) {
@@ -215,6 +216,7 @@ document.getElementById('clearBtn').addEventListener('click', () => {
     form.reset();
     window._lastData = null;
     document.getElementById('excelPanel').classList.remove('show');
+    document.getElementById('excelBtn').hidden = true;
     showToast('Form cleared');
   }
 });

@@ -50,7 +50,8 @@
     button:disabled { opacity: 0.6; cursor: not-allowed; }
     .btn-primary { background: var(--accent); color: white; flex: 1; min-width: 160px; }
     .btn-secondary { background: #e8eaf0; color: var(--text); }
-    .btn-success { background: var(--success); color: white; width: 100%; }
+    .btn-success { background: var(--success); color: white; flex: 1; min-width: 160px; }
+    .btn-success[hidden] { display: none !important; }
     .success-panel { display: none; background: #e7f3ec; border: 1px solid #b7d9c4; border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px 18px; }
     .success-panel.show { display: block; }
     .success-panel h3 { font-size: 0.95rem; color: var(--success); margin-bottom: 4px; }
@@ -114,8 +115,8 @@
       <div class="section"><div class="section-title">Set-Up Fee</div>
         <div class="field"><div class="option-group"><label class="option"><input type="radio" name="setupFee" value="$195.00" /> $195.00</label><label class="option"><input type="radio" name="setupFee" value="$295.00" /> $295.00</label><label class="option"><input type="radio" name="setupFee" value="$395.00" /> $395.00</label><label class="option"><input type="radio" name="setupFee" value="$495.00" /> $495.00</label><label class="option"><input type="radio" name="setupFee" value="WAIVE" /> WAIVE</label></div></div>
       </div>
-      <div class="actions"><button type="submit" class="btn-primary" id="submitBtn">Generate 1-Page PDF</button><button type="button" class="btn-secondary" id="clearBtn">Clear Form</button></div>
-      <div class="success-panel" id="excelPanel"><h3>PDF ready</h3><p id="excelHint">Convert the same intake into an Excel spreadsheet for the team file.</p><button type="button" class="btn-success" id="excelBtn">Convert to Excel</button></div>
+      <div class="success-panel" id="excelPanel"><h3>PDF ready</h3><p id="excelHint">Convert the same intake into an Excel spreadsheet for the team file.</p></div>
+      <div class="actions"><button type="button" class="btn-success" id="excelBtn" hidden>Convert to Excel</button><button type="submit" class="btn-primary" id="submitBtn">Generate 1-Page PDF</button><button type="button" class="btn-secondary" id="clearBtn">Clear Form</button></div>
     </form>
   </div>
   <div class="toast" id="toast"></div>
