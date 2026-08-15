@@ -1,2 +1,124 @@
 <!DOCTYPE html>
-<!-- see workspace artifacts; using push_files next -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Client Intake Form — Dickens Wealth Management</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --primary: #1a1a1a;
+      --accent: #0d47a1;
+      --accent-light: #e3f2fd;
+      --border: #d0d0d0;
+      --bg: #f5f6f8;
+      --card: #ffffff;
+      --text: #222;
+      --muted: #666;
+      --success: #2e7d32;
+      --radius: 10px;
+      --shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; padding: 20px 16px 80px; }
+    .container { max-width: 720px; margin: 0 auto; }
+    header { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 26px 22px 22px; margin-bottom: 22px; text-align: center; border-top: 5px solid var(--primary); }
+    .logo-row { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 10px; }
+    .logo { width: 52px; height: 52px; background: #111; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 15px; flex-shrink: 0; }
+    .firm-name { font-size: 1.3rem; font-weight: 700; color: var(--primary); line-height: 1.2; }
+    .firm-tagline { font-size: 0.88rem; color: var(--muted); margin-top: 2px; }
+    .address { font-size: 0.78rem; color: var(--muted); margin-top: 10px; line-height: 1.4; }
+    h1 { font-size: 1.35rem; font-weight: 700; margin-top: 16px; color: var(--primary); }
+    form { display: flex; flex-direction: column; gap: 18px; }
+    .section { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px 18px; }
+    .section-title { font-size: 0.9rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 14px; padding-bottom: 7px; border-bottom: 2px solid var(--accent-light); }
+    .field { margin-bottom: 14px; }
+    .field:last-child { margin-bottom: 0; }
+    label { display: block; font-size: 0.86rem; font-weight: 600; margin-bottom: 5px; color: var(--text); }
+    .hint { font-size: 0.76rem; color: var(--muted); font-weight: 400; margin-top: 3px; }
+    input[type='text'], input[type='email'], input[type='tel'], input[type='number'], select, textarea { width: 100%; padding: 10px 13px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.98rem; background: #fff; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(13,71,161,0.15); }
+    textarea { min-height: 85px; resize: vertical; }
+    .option-group { display: flex; flex-wrap: wrap; gap: 10px 16px; }
+    .option { display: flex; align-items: center; gap: 7px; cursor: pointer; font-weight: 500; font-size: 0.94rem; }
+    .option input { width: 17px; height: 17px; accent-color: var(--accent); }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 560px) { .row { grid-template-columns: 1fr; } }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px; position: sticky; bottom: 16px; z-index: 10; }
+    button { cursor: pointer; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; padding: 13px 20px; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-primary { background: var(--accent); color: white; flex: 1; min-width: 160px; }
+    .btn-secondary { background: #e8eaf0; color: var(--text); }
+    .btn-success { background: var(--success); color: white; width: 100%; }
+    .success-panel { display: none; background: #e7f3ec; border: 1px solid #b7d9c4; border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px 18px; }
+    .success-panel.show { display: block; }
+    .success-panel h3 { font-size: 0.95rem; color: var(--success); margin-bottom: 4px; }
+    .success-panel p { font-size: 0.88rem; color: var(--text); margin-bottom: 12px; }
+    .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(90px); background: #222; color: white; padding: 13px 24px; border-radius: 8px; font-size: 0.95rem; opacity: 0; transition: all 0.3s ease; z-index: 200; pointer-events: none; }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .btn-primary.loading::after { content: ''; display: inline-block; width: 14px; height: 14px; margin-left: 10px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: -2px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo-row">
+        <div class="logo">DWM</div>
+        <div>
+          <div class="firm-name">Dickens Wealth Management</div>
+          <div class="firm-tagline">Accounting, Tax &amp; Consulting Services</div>
+        </div>
+      </div>
+      <div class="address">9340 N. 56th Street, Suite 200 A • Temple Terrace, Florida 33617<br>813/980.6180 • Fax 813/985.5018 • www.dickenswm.com</div>
+      <h1>New Client Intake Form</h1>
+    </header>
+    <form id="intakeForm" novalidate>
+      <div class="section"><div class="section-title">Client Type</div><div class="field"><label>Type of Client</label><div class="option-group"><label class="option"><input type="radio" name="clientType" value="Business" /> Business</label><label class="option"><input type="radio" name="clientType" value="Individual" /> Individual</label><label class="option"><input type="radio" name="clientType" value="Investment" /> Investment</label><label class="option"><input type="radio" name="clientType" value="Consult" /> Consult</label></div></div></div>
+      <div class="section"><div class="section-title">Company / Entity</div>
+        <div class="field"><label for="companyName">Company / Entity Name</label><input type="text" id="companyName" name="companyName" placeholder="Legal name of the business" /></div>
+        <div class="field"><label for="dbaName">DBA Name</label><input type="text" id="dbaName" name="dbaName" placeholder="Doing Business As (if different)" /></div>
+        <div class="row"><div class="field"><label for="ein">EIN #</label><input type="text" id="ein" name="ein" placeholder="XX-XXXXXXX" /></div><div class="field"><label for="stateUE">State UE #</label><input type="text" id="stateUE" name="stateUE" placeholder="State unemployment #" /></div></div>
+        <div class="field"><label for="businessAddress">Primary Business Address</label><input type="text" id="businessAddress" name="businessAddress" placeholder="Street, City, State, ZIP" /></div>
+        <div class="field"><label for="stateOfInc">State of Incorporation</label><input type="text" id="stateOfInc" name="stateOfInc" placeholder="e.g. Florida" /></div>
+        <div class="field"><label for="entityType">Entity Type</label><select id="entityType" name="entityType"><option value="">— Select —</option><option value="CORP">CORP (Corporation)</option><option value="PNP">PNP (Partnership)</option><option value="LLC">LLC</option><option value="SPROP">SPROP (Sole Proprietorship)</option></select></div>
+      </div>
+      <div class="section"><div class="section-title">Primary Contact</div>
+        <div class="field"><label for="contactName">Primary Contact Name</label><input type="text" id="contactName" name="contactName" placeholder="Full name" /></div>
+        <div class="row"><div class="field"><label for="contactPhone">Phone #</label><input type="tel" id="contactPhone" name="contactPhone" placeholder="(813) 555-1234" /></div><div class="field"><label for="contactEmail">Email Address</label><input type="email" id="contactEmail" name="contactEmail" placeholder="name@example.com" /></div></div>
+        <div class="field"><label for="contactSSN">Primary Contact SS #</label><input type="text" id="contactSSN" name="contactSSN" placeholder="XXX-XX-XXXX" autocomplete="off" /><div class="hint">For tax purposes only. Handle securely.</div></div>
+      </div>
+      <div class="section"><div class="section-title">Tax Returns</div>
+        <div class="field"><label for="returnType">Type of Business Return Filed</label><input type="text" id="returnType" name="returnType" placeholder="e.g. 1120, 1120S, 1065, Schedule C" /></div>
+        <div class="row"><div class="field"><label for="lyfFederal">Last Year Filed — Federal</label><input type="text" id="lyfFederal" name="lyfFederal" placeholder="e.g. 2024" /></div><div class="field"><label for="lyfState">Last Year Filed — State</label><input type="text" id="lyfState" name="lyfState" placeholder="e.g. 2024" /></div></div>
+      </div>
+      <div class="section"><div class="section-title">Prior Accountant</div>
+        <div class="field"><label for="priorName">Prior Accountant Name</label><input type="text" id="priorName" name="priorName" /></div>
+        <div class="field"><label for="priorPhone">Prior Accountant Phone #</label><input type="tel" id="priorPhone" name="priorPhone" /></div>
+        <div class="field"><label for="priorAddress">Prior Accountant Address</label><input type="text" id="priorAddress" name="priorAddress" /></div>
+      </div>
+      <div class="section"><div class="section-title">Financial Snapshot</div>
+        <div class="row"><div class="field"><label for="annualSales">Approximate Annual Sales $</label><input type="text" id="annualSales" name="annualSales" placeholder="e.g. 250000" /></div><div class="field"><label for="annualIncome">Approximate Annual Income</label><input type="text" id="annualIncome" name="annualIncome" placeholder="e.g. 85000" /></div></div>
+        <div class="field"><label for="yearsInBusiness"># Years In Business</label><input type="number" id="yearsInBusiness" name="yearsInBusiness" min="0" step="1" placeholder="e.g. 5" /></div>
+      </div>
+      <div class="section"><div class="section-title">Sales &amp; Tangible Tax</div>
+        <div class="field"><label>Sales Tax Applicable?</label><div class="option-group"><label class="option"><input type="radio" name="salesTaxApplicable" value="Yes" /> Yes</label><label class="option"><input type="radio" name="salesTaxApplicable" value="No" /> No</label></div></div>
+        <div class="field"><label for="salesTaxNumber">Sales Tax #</label><input type="text" id="salesTaxNumber" name="salesTaxNumber" /></div>
+        <div class="field"><label for="tangibleTax">Do You File Tangible Tax Returns?</label><input type="text" id="tangibleTax" name="tangibleTax" placeholder="Yes / No or details" /></div>
+        <div class="field"><label for="tangibleAddress">For What Address</label><input type="text" id="tangibleAddress" name="tangibleAddress" /></div>
+      </div>
+      <div class="section"><div class="section-title">Critical Needs &amp; Notes</div>
+        <div class="field"><label for="notes">Critical Needs And Notes Assessment</label><textarea id="notes" name="notes" placeholder="Any special circumstances, deadlines, pain points, or important notes..."></textarea></div>
+      </div>
+      <div class="section"><div class="section-title">Set-Up Fee</div>
+        <div class="field"><div class="option-group"><label class="option"><input type="radio" name="setupFee" value="$195.00" /> $195.00</label><label class="option"><input type="radio" name="setupFee" value="$295.00" /> $295.00</label><label class="option"><input type="radio" name="setupFee" value="$395.00" /> $395.00</label><label class="option"><input type="radio" name="setupFee" value="$495.00" /> $495.00</label><label class="option"><input type="radio" name="setupFee" value="WAIVE" /> WAIVE</label></div></div>
+      </div>
+      <div class="actions"><button type="submit" class="btn-primary" id="submitBtn">Generate 1-Page PDF</button><button type="button" class="btn-secondary" id="clearBtn">Clear Form</button></div>
+      <div class="success-panel" id="excelPanel"><h3>PDF ready</h3><p id="excelHint">Convert the same intake into an Excel spreadsheet for the team file.</p><button type="button" class="btn-success" id="excelBtn">Convert to Excel</button></div>
+    </form>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
